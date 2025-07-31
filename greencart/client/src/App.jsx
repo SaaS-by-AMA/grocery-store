@@ -18,6 +18,8 @@ import AddProduct from './pages/seller/AddProduct';
 import ProductList from './pages/seller/ProductList';
 import Orders from './pages/seller/Orders';
 import Loading from './components/Loading';
+import WhatsAppButton from './components/WhatsappButton';
+
 
 const App = () => {
 
@@ -32,7 +34,7 @@ const App = () => {
 
      <Toaster />
 
-      <div className={`${isSellerPath ? "" : "px-6 md:px-16 lg:px-24 xl:px-32"}`}>
+      <div className={`${isSellerPath ? "" : "px-2 md:px-6 lg:px-10 xl:px-12"}`}>
         <Routes>
           <Route path='/' element={<Home/>} />
           <Route path='/products' element={<AllProducts/>} />
@@ -50,6 +52,7 @@ const App = () => {
         </Routes>
       </div>
      {!isSellerPath && <Footer/>}
+     {!isSellerPath && <WhatsAppButton />}
     </div>
   )
 }

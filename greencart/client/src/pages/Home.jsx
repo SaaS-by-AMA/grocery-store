@@ -4,11 +4,13 @@ import Categories from '../components/Categories'
 import BestSeller from '../components/BestSeller'
 import BottomBanner from '../components/BottomBanner'
 import NewsLetter from '../components/NewsLetter'
+import FramerHeroCarousel from '../components/FramerHeroCarousel'
+import PromoBar from '../components/PromoBar'
 
 const Home = () => {
   return (
     <div className='mt-10'>
-      <MainBanner />
+      <PromoBar />
       <Categories />
       <BestSeller />
       <BottomBanner/>
