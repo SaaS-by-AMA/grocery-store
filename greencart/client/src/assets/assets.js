@@ -69,6 +69,10 @@ import vanilla_muffins_image from "./vanilla_muffins_image.png";
 import quinoa_image from "./quinoa_image.png";
 import brown_rice_image from "./brown_rice_image.png";
 import barley_image from "./barley_image.png";
+import groceryFoods from "./grocery-foods.webp";
+import groceryNonFoods from "./grocery-non-foods.webp";
+import Perfume from "./perfume.webp";
+import Skincare from "./skincare.webp";
 
 export const assets = {
   logo,
@@ -102,21 +106,21 @@ export const assets = {
 
 export const categories = [
   {
-    text: "Organic veggies",
-    path: "Vegetables",
-    image: organic_vegitable_image,
+    text: "Grocery Foods",
+    path: "Foods",
+    image: groceryFoods,
     bgColor: "#FEF6DA",
   },
   {
-    text: "Fresh Fruits",
-    path: "Fruits",
-    image: fresh_fruits_image,
+    text: "Grocery Non-Foods",
+    path: "Foods",
+    image: groceryNonFoods,
     bgColor: "#FEE0E0",
   },
   {
-    text: "Cold Drinks",
-    path: "Drinks",
-    image: bottles_image,
+    text: "Perfumes",
+    path: "Perfumes",
+    image: Perfume,
     bgColor: "#F0F5DE",
   },
   {
@@ -138,9 +142,9 @@ export const categories = [
     bgColor: "#E0F6FE",
   },
   {
-    text: "Grains & Cereals",
-    path: "Grains",
-    image: grain_image,
+    text: "Skincare",
+    path: "Skincare",
+    image: Skincare,
     bgColor: "#F1E3F9",
   },
 ];
