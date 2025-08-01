@@ -184,8 +184,8 @@ export const footerLinks = [
 export const features = [
   {
     icon: delivery_truck_icon,
-    title: "Fastest Delivery",
-    description: "Groceries delivered in under 30 minutes.",
+    title: "Fast Delivery",
+    description: "Items delivered in under 30 minutes.",
   },
   {
     icon: leaf_icon,
@@ -195,12 +195,12 @@ export const features = [
   {
     icon: coin_icon,
     title: "Affordable Prices",
-    description: "Quality groceries at unbeatable prices.",
+    description: "Quality groceries at affodable prices.",
   },
   {
     icon: trust_icon,
     title: "Trusted by Thousands",
-    description: "Loved by 10,000+ happy customers.",
+    description: "Loved by 1,000+ happy customers.",
   },
 ];
 
