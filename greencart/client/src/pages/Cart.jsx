@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
-import { assets, dummyAddress } from "../assets/assets";
+import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -12,104 +12,77 @@ const Cart = () => {
     removeFromCart,
     getCartCount,
     updateCartItem,
-    navigate,
     getCartAmount,
-    axios,
-    user,
-    setCartItems,
+    clearCart,
+    navigate
   } = useAppContext();
-  const [cartArray, setCartArray] = useState([]);
-  const [addresses, setAddresses] = useState([]);
-  const [showAddress, setShowAddress] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState(null);
-  const [paymentOption, setPaymentOption] = useState("COD");
 
+  const [cartArray, setCartArray] = useState([]);
+
+  // Convert cart items to array format for display
   const getCart = () => {
-    let tempArray = [];
+    const tempArray = [];
     for (const key in cartItems) {
       const product = products.find((item) => item._id === key);
-      product.quantity = cartItems[key];
-      tempArray.push(product);
+      if (product) {
+        tempArray.push({
+          ...product,
+          quantity: cartItems[key]
+        });
+      }
     }
     setCartArray(tempArray);
   };
 
-  const getUserAddress = async () => {
-    try {
-      const { data } = await axios.get("/api/address/get");
-      if (data.success) {
-        setAddresses(data.addresses);
-        if (data.addresses.length > 0) {
-          setSelectedAddress(data.addresses[0]);
-        }
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
-
   const placeOrder = async () => {
     try {
-      if (!selectedAddress) {
-        return toast.error("Please select an address");
-      }
-
-      // Place Order with COD
-      if (paymentOption === "COD") {
-        const { data } = await axios.post("/api/order/cod", {
-          userId: user._id,
-          items: cartArray.map((item) => ({
-            product: item._id,
-            quantity: item.quantity,
-          })),
-          address: selectedAddress._id,
-        });
-
-        if (data.success) {
-          toast.success(data.message);
-          setCartItems({});
-          navigate("/my-orders");
-        } else {
-          toast.error(data.message);
-        }
-      } else {
-        // Place Order with Stripe
-        const { data } = await axios.post("/api/order/stripe", {
-          userId: user._id,
-          items: cartArray.map((item) => ({
-            product: item._id,
-            quantity: item.quantity,
-          })),
-          address: selectedAddress._id,
-        });
-
-        if (data.success) {
-          window.location.replace(data.url);
-        } else {
-          toast.error(data.message);
-        }
-      }
+      // In a real implementation, you would:
+      // 1. Collect address/payment info
+      // 2. Submit to your order API
+      // 3. Clear cart on success
+      toast.success("Order placed successfully!");
+      clearCart();
+      navigate("/"); // Redirect to home or confirmation page
     } catch (error) {
-      toast.error(error.message);
+      toast.error("Failed to place order");
+      console.error(error);
     }
   };
 
   useEffect(() => {
-    if (products.length > 0 && cartItems) {
+    if (products.length > 0 && Object.keys(cartItems).length > 0) {
       getCart();
+    } else {
+      setCartArray([]);
     }
   }, [products, cartItems]);
 
-  useEffect(() => {
-    if (user) {
-      getUserAddress();
-    }
-  }, [user]);
+  if (products.length === 0) {
+    return <div className="mt-16 text-center">Loading products...</div>;
+  }
 
-  return products.length > 0 && cartItems ? (
-    <div className="flex flex-col md:flex-row mt-16">
+  if (cartArray.length === 0) {
+    return (
+      <div className="mt-16 flex flex-col items-center justify-center min-h-[50vh]">
+        <img 
+          src={assets.empty_cart} 
+          alt="Empty cart" 
+          className="w-40 h-40 mb-4"
+        />
+        <h2 className="text-2xl font-medium mb-2">Your cart is empty</h2>
+        <p className="text-gray-500 mb-6">Browse our products to add items</p>
+        <button
+          onClick={() => navigate("/products")}
+          className="px-6 py-2 bg-primary text-white rounded hover:bg-primary-dull transition"
+        >
+          Continue Shopping
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col md:flex-row mt-16 px-4">
       <div className="flex-1 max-w-4xl">
         <h1 className="text-3xl font-medium mb-6">
           Shopping Cart{" "}
@@ -122,51 +95,38 @@ const Cart = () => {
           <p className="text-center">Action</p>
         </div>
 
-        {cartArray.map((product, index) => (
+        {cartArray.map((product) => (
           <div
-            key={index}
-            className="grid bg-[#f2f2f2] mx-2 grid-cols-[2fr_1fr_1fr] text-gray-500 items-center text-sm md:text-base hover:bg-[#dde2dd] transition-all duration-200 group rounded font-medium pt-3"
+            key={product._id}
+            className="grid bg-[#f2f2f2] mx-2 grid-cols-[2fr_1fr_1fr] text-gray-500 items-center text-sm md:text-base hover:bg-[#dde2dd] transition-all duration-200 group rounded font-medium pt-3 mb-3"
           >
             <div className="flex items-center md:gap-6 gap-3">
               <div
-                onClick={() => {
-                  navigate(
-                    `/products/${product.category.toLowerCase()}/${product._id}`
-                  );
-                  scrollTo(0, 0);
-                }}
+                onClick={() => navigate(`/products/${product.category.toLowerCase()}/${product._id}`)}
                 className="cursor-pointer w-20 h-20 flex items-center justify-center border border-gray-300 rounded ml-2 mb-2 -mt-1"
               >
                 <img
-                  className="max-w-full h-full object-cover group-hover:scale-105 transition-transform duration-250 rounded-sm "
+                  className="max-w-full h-full object-cover group-hover:scale-105 transition-transform duration-250 rounded-sm"
                   src={product.image[0]}
                   alt={product.name}
                 />
               </div>
               <div>
-                <p className="hidden md:block font-semibold">{product.name}</p>
+                <p className="font-semibold">{product.name}</p>
                 <div className="font-normal text-gray-500/70">
-                  <p>
-                    Weight: <span>{product.weight || "N/A"}</span>
-                  </p>
+                  <p>Weight: {product.weight || "N/A"}</p>
                   <div className="flex items-center">
                     <p>Qty:</p>
                     <select
-                      onChange={(e) =>
-                        updateCartItem(product._id, Number(e.target.value))
-                      }
-                      value={cartItems[product._id]}
-                      className="outline-none"
+                      onChange={(e) => updateCartItem(product._id, Number(e.target.value))}
+                      value={product.quantity}
+                      className="outline-none bg-transparent"
                     >
-                      {Array(
-                        cartItems[product._id] > 9 ? cartItems[product._id] : 9
-                      )
-                        .fill("")
-                        .map((_, index) => (
-                          <option key={index} value={index + 1}>
-                            {index + 1}
-                          </option>
-                        ))}
+                      {[...Array(10).keys()].map((qty) => (
+                        <option key={qty + 1} value={qty + 1}>
+                          {qty + 1}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -174,11 +134,12 @@ const Cart = () => {
             </div>
             <p className="text-center">
               {currency}
-              {product.offerPrice * product.quantity}
+              {(product.offerPrice * product.quantity).toFixed(2)}
             </p>
             <button
               onClick={() => removeFromCart(product._id)}
               className="cursor-pointer mx-auto"
+              aria-label="Remove item"
             >
               <img
                 src={assets.remove_icon}
@@ -190,10 +151,7 @@ const Cart = () => {
         ))}
 
         <button
-          onClick={() => {
-            navigate("/products");
-            scrollTo(0, 0);
-          }}
+          onClick={() => navigate("/products")}
           className="group cursor-pointer flex items-center mt-8 gap-2 text-primary font-medium"
         >
           <img
@@ -205,51 +163,47 @@ const Cart = () => {
         </button>
       </div>
 
-      <div className="max-w-[360px] w-full bg-gray-100/40 p-5 max-md:mt-16 border border-gray-300/70">
-        <h2 className="text-xl md:text-xl font-medium">Cart Summary</h2>
+      <div className="max-w-[360px] w-full bg-gray-100/40 p-5 max-md:mt-16 border border-gray-300/70 rounded-lg">
+        <h2 className="text-xl font-medium">Order Summary</h2>
         <hr className="border-gray-300 my-3" />
 
         <div className="text-gray-500 mt-4 space-y-2">
           <p className="flex justify-between">
-            <span>Price</span>
+            <span>Subtotal</span>
             <span>
               {currency}
-              {getCartAmount()}
+              {getCartAmount().toFixed(2)}
             </span>
           </p>
           <p className="flex justify-between">
-            <span>Shipping Fee</span>
+            <span>Shipping</span>
             <span className="text-green-600">Free</span>
           </p>
           <p className="flex justify-between">
             <span>Tax (2%)</span>
             <span>
               {currency}
-              {(getCartAmount() * 2) / 100}
+              {(getCartAmount() * 0.02).toFixed(2)}
             </span>
           </p>
           <p className="flex justify-between text-lg font-medium mt-3">
-            <span>Total Amount:</span>
+            <span>Total:</span>
             <span>
               {currency}
-              {getCartAmount() + (getCartAmount() * 2) / 100}
+              {(getCartAmount() * 1.02).toFixed(2)}
             </span>
           </p>
         </div>
 
         <button
-          onClick={() => {
-            navigate("/checkout");
-            window.scrollTo(0, 0);
-          }}
-          className={`w-full py-3 mt-6 cursor-pointer bg-primary text-white font-medium hover:bg-primary-dull transition`}
-          disabled={cartArray.length === 0}
+          onClick={() => navigate("/checkout")}
+          className="w-full py-3 mt-6 cursor-pointer bg-primary text-white font-medium hover:bg-primary-dull transition rounded"
         >
           Proceed to Checkout
         </button>
       </div>
     </div>
-  ) : null;
+  );
 };
 
 export default Cart;

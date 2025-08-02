@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
-import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
@@ -13,30 +12,11 @@ const Navbar = () => {
   const hamburgerRef = useRef();
 
   const {
-    user,
-    setUser,
-    setShowUserLogin,
     navigate,
     setSearchQuery,
     searchQuery,
     getCartCount,
-    axios,
   } = useAppContext();
-
-  const logout = async () => {
-    try {
-      const { data } = await axios.get("/api/user/logout");
-      if (data.success) {
-        toast.success(data.message);
-        setUser(null);
-        navigate("/");
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
 
   useEffect(() => {
     if (searchQuery.length > 0) {
@@ -132,8 +112,8 @@ const Navbar = () => {
 
         <div className="hidden sm:flex items-center gap-8">
           <NavLink to="/">Home</NavLink>
-          <NavLink to="/products">All Product</NavLink>
-          <NavLink to="/">Contact</NavLink>
+          <NavLink to="/products">All Products</NavLink>
+          <NavLink to="/">Contact Us</NavLink>
 
           <div className="hidden lg:flex items-center text-sm gap-2 border border-gray-300 px-3 rounded-full">
             <input
@@ -159,32 +139,10 @@ const Navbar = () => {
             </button>
           </div>
 
-          {!user ? (
-            <button
-              onClick={() => setShowUserLogin(true)}
-              className="cursor-pointer px-8 py-2 bg-primary hover:bg-primary-dull transition text-white rounded-full"
-            >
-              Login
-            </button>
-          ) : (
-            <div className="relative group">
-              <img src={assets.profile_icon} className="w-10" alt="" />
-              <ul className="hidden group-hover:block absolute top-10 right-0 bg-white shadow border border-gray-200 py-2.5 w-30 rounded-md text-sm z-40">
-                <li
-                  onClick={() => navigate("my-orders")}
-                  className="p-1.5 pl-3 hover:bg-primary/10 cursor-pointer"
-                >
-                  My Orders
-                </li>
-                <li
-                  onClick={logout}
-                  className="p-1.5 pl-3 hover:bg-primary/10 cursor-pointer"
-                >
-                  Logout
-                </li>
-              </ul>
-            </div>
-          )}
+          {/* Avatar icon (optional) */}
+          <div className="relative">
+            <img src={assets.profile_icon} className="w-10" alt="profile" />
+          </div>
         </div>
 
         <div className="flex items-center gap-6 sm:hidden">
@@ -299,21 +257,9 @@ const Navbar = () => {
                   onClick={() => setOpen(false)}
                   className="block w-full p-2 rounded-md hover:bg-gray-50 transition-colors duration-200"
                 >
-                  All Product
+                  All Products
                 </NavLink>
               </motion.div>
-              
-              {user && (
-                <motion.div variants={menuItemVariants}>
-                  <NavLink 
-                    to="/products" 
-                    onClick={() => setOpen(false)}
-                    className="block w-full p-2 rounded-md hover:bg-gray-50 transition-colors duration-200"
-                  >
-                    My Orders
-                  </NavLink>
-                </motion.div>
-              )}
               
               <motion.div variants={menuItemVariants}>
                 <NavLink 
@@ -321,32 +267,8 @@ const Navbar = () => {
                   onClick={() => setOpen(false)}
                   className="block w-full p-2 rounded-md hover:bg-gray-50 transition-colors duration-200"
                 >
-                  Contact
+                  Contact Us
                 </NavLink>
-              </motion.div>
-              
-              <motion.div variants={menuItemVariants} className="w-full">
-                {!user ? (
-                  <button
-                    onClick={() => {
-                      setOpen(false);
-                      setShowUserLogin(true);
-                    }}
-                    className="w-full cursor-pointer px-6 py-2 mt-2 bg-primary hover:bg-primary-dull transition text-white rounded-full text-sm"
-                  >
-                    Login
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setOpen(false);
-                      logout();
-                    }}
-                    className="w-full cursor-pointer px-6 py-2 mt-2 bg-primary hover:bg-primary-dull transition text-white rounded-full text-sm"
-                  >
-                    Logout
-                  </button>
-                )}
               </motion.div>
             </motion.div>
           )}
