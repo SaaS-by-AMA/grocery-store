@@ -1,75 +1,316 @@
-import React, { useEffect, useState } from 'react'
-import { useAppContext } from '../../context/AppContext'
-import { assets, dummyOrders } from '../../assets/assets'
-import toast from 'react-hot-toast'
+import React, { useEffect, useState } from 'react';
+import { useAppContext } from '../../context/AppContext';
+import { assets } from '../../assets/assets';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const Orders = () => {
-    const {currency, axios} = useAppContext()
-    const [orders, setOrders] = useState([])
+    const { currency, axios } = useAppContext();
+    const navigate = useNavigate();
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [updatingOrderId, setUpdatingOrderId] = useState(null);
 
-    const fetchOrders = async () =>{
+    const fetchOrders = async () => {
         try {
-            const { data } = await axios.get('/api/order/seller');
-            if(data.success){
-                setOrders(data.orders)
-            }else{
-                toast.error(data.message)
+            setLoading(true);
+            setError(null);
+            
+            const { data } = await axios.get('/api/order/seller/orders', {
+                withCredentials: true
+            });
+
+            if (data.success) {
+                setOrders(data.orders || []);
+            } else {
+                throw new Error(data.message || "Failed to fetch orders");
             }
         } catch (error) {
-            toast.error(error.message)
+            console.error("Fetch orders error:", error);
+            setError(error.response?.data?.message || error.message);
+            
+            if (error.response?.status === 401) {
+                toast.error("Session expired. Please login again.");
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
+    const updateOrderStatus = async (orderId, newStatus) => {
+        try {
+            setUpdatingOrderId(orderId);
+            const { data } = await axios.patch(
+                `/api/order/seller/orders/${orderId}/status`,
+                { status: newStatus },
+                { withCredentials: true }
+            );
 
-    useEffect(()=>{
+            if (data.success) {
+                setOrders(orders.map(order => 
+                    order._id === orderId ? data.order : order
+                ));
+                toast.success(`Order status updated to ${newStatus}`);
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to update status");
+        } finally {
+            setUpdatingOrderId(null);
+        }
+    };
+
+    const updatePaymentStatus = async (orderId, newStatus) => {
+        try {
+            setUpdatingOrderId(orderId);
+            const { data } = await axios.patch(
+                `/api/order/seller/orders/${orderId}/payment-status`,
+                { paymentStatus: newStatus },
+                { withCredentials: true }
+            );
+
+            if (data.success) {
+                setOrders(orders.map(order => 
+                    order._id === orderId ? data.order : order
+                ));
+                toast.success(`Payment status updated to ${newStatus}`);
+                fetchOrders(); // Refresh to re-sort orders
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to update payment status");
+        } finally {
+            setUpdatingOrderId(null);
+        }
+    };
+
+    useEffect(() => {
         fetchOrders();
-    },[])
+    }, []);
 
+    const getStatusBadge = (status) => {
+        const statusMap = {
+            'Order Placed': 'bg-blue-100 text-blue-800',
+            'Processing': 'bg-yellow-100 text-yellow-800',
+            'Shipped': 'bg-purple-100 text-purple-800',
+            'Delivered': 'bg-green-100 text-green-800',
+            'Cancelled': 'bg-red-100 text-red-800'
+        };
+        
+        return (
+            <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
+                statusMap[status] || 'bg-gray-100 text-gray-800'
+            }`}>
+                {status}
+            </span>
+        );
+    };
 
-  return (
-    <div className='no-scrollbar flex-1 h-[95vh] overflow-y-scroll'>
-    <div className="md:p-10 p-4 space-y-4">
-            <h2 className="text-lg font-medium">Orders List</h2>
-            {orders.map((order, index) => (
-                <div key={index} className="flex flex-col md:items-center md:flex-row gap-5 justify-between p-5 max-w-4xl rounded-md border border-gray-300">
+    const getPaymentBadge = (isPaid, paymentStatus) => {
+        if (isPaid) return 'bg-green-100 text-green-800';
+        if (paymentStatus === 'Pending') return 'bg-yellow-100 text-yellow-800';
+        if (paymentStatus === 'Failed') return 'bg-red-100 text-red-800';
+        return 'bg-gray-100 text-gray-800';
+    };
 
-                    <div className="flex gap-5 max-w-80">
-                        <img className="w-12 h-12 object-cover" src={assets.box_icon} alt="boxIcon" />
-                        <div>
-                            {order.items.map((item, index) => (
-                                <div key={index} className="flex flex-col">
-                                    <p className="font-medium">
-                                        {item.product.name}{" "} 
-                                        <span className="text-primary">x {item.quantity}</span>
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+    const handleOrderClick = (orderId) => {
+        navigate(`/order-details/${orderId}`);
+    };
 
-                    <div className="text-sm md:text-base text-black/60">
-                        <p className='text-black/80'>
-                        {order.address.firstName} {order.address.lastName}</p>
+    if (loading && orders.length === 0) {
+        return (
+            <div className="flex justify-center items-center h-[80vh]">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
 
-                        <p>{order.address.street}, {order.address.city}</p>
-                        <p> {order.address.state}, {order.address.zipcode}, {order.address.country}</p>
-                        <p></p>
-                        <p>{order.address.phone}</p>
-                    </div>
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[80vh]">
+                <img 
+                    src={assets.error_icon} 
+                    alt="Error" 
+                    className="w-20 h-20 mb-4 opacity-70"
+                />
+                <p className="text-lg font-medium text-gray-700 mb-2">
+                    {error.includes("401") ? "Session Expired" : "Error Loading Orders"}
+                </p>
+                <p className="text-gray-500 mb-6">{error}</p>
+                <button
+                    onClick={fetchOrders}
+                    className="px-6 py-2 bg-primary text-white rounded hover:bg-primary-dull transition"
+                >
+                    Retry
+                </button>
+            </div>
+        );
+    }
 
-                    <p className="font-medium text-lg my-auto">
-                    {currency}{order.amount}</p>
-
-                    <div className="flex flex-col text-sm md:text-base text-black/60">
-                        <p>Method: {order.paymentType}</p>
-                        <p>Date: {new Date(order.createdAt).toLocaleDateString()}</p>
-                        <p>Payment: {order.isPaid ? "Paid" : "Pending"}</p>
-                    </div>
+    return (
+        <div className="flex-1 h-[95vh] overflow-y-auto">
+            <div className="md:p-8 p-4 space-y-6">
+                <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-bold text-gray-800">Order Management</h2>
+                    <button 
+                        onClick={fetchOrders}
+                        className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm font-medium"
+                        disabled={loading}
+                    >
+                        {loading ? 'Refreshing...' : 'Refresh Orders'}
+                    </button>
                 </div>
-            ))}
-        </div>
-        </div>
-  )
-}
 
-export default Orders
+                {orders.length === 0 ? (
+                    <div className="text-center py-12">
+                        <img 
+                            src={assets.empty_orders} 
+                            alt="No orders" 
+                            className="mx-auto h-40 w-40 opacity-70"
+                        />
+                        <p className="mt-4 text-gray-500">No orders found</p>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        {orders.map((order) => (
+                            <div 
+                                key={order._id} 
+                                className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
+                            >
+                                <div className="p-5">
+                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <h3 
+                                                    className="font-medium text-gray-900 hover:text-primary cursor-pointer"
+                                                    onClick={() => handleOrderClick(order._id)}
+                                                >
+                                                    Order #{order._id.substring(0, 8).toUpperCase()}
+                                                </h3>
+                                                {getStatusBadge(order.status)}
+                                            </div>
+                                            <p className="text-sm text-gray-500">
+                                                {new Date(order.createdAt).toLocaleString()}
+                                            </p>
+                                        </div>
+
+                                        <div className="text-lg font-semibold">
+                                            {currency}{order.amount.toFixed(2)}
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-4 pt-4 border-t border-gray-100">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <h4 className="text-sm font-medium text-gray-500 mb-2">ITEMS</h4>
+                                                <ul className="space-y-2">
+                                                    {order.items.map((item, idx) => (
+                                                        <li key={idx} className="flex justify-between">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-10 h-10 bg-gray-100 rounded-md flex items-center justify-center">
+                                                                    {item.product?.image ? (
+                                                                        <img 
+                                                                            src={item.product.image[0]} 
+                                                                            alt={item.product.name}
+                                                                            className="w-full h-full object-cover"
+                                                                        />
+                                                                    ) : (
+                                                                        <img 
+                                                                            src={assets.box_icon} 
+                                                                            alt="Product"
+                                                                            className="w-6 h-6 opacity-50"
+                                                                        />
+                                                                    )}
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-sm font-medium">
+                                                                        {item.product?.name || 'Product'}
+                                                                    </p>
+                                                                    <p className="text-xs text-gray-500">
+                                                                        Qty: {item.quantity}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <p className="text-sm font-medium">
+                                                                {currency}{(item.product?.offerPrice * item.quantity).toFixed(2)}
+                                                            </p>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="text-sm font-medium text-gray-500 mb-2">CUSTOMER</h4>
+                                                <div className="space-y-1">
+                                                    <p className="text-sm font-medium">
+                                                        {order.address.firstName} {order.address.lastName}
+                                                    </p>
+                                                    <p className="text-sm text-gray-600">{order.address.phone}</p>
+                                                    <div className="text-sm text-gray-600">
+                                                        <p>{order.address.street}</p>
+                                                        <p>{order.address.town}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="mt-3">
+                                                    <h4 className="text-sm font-medium text-gray-500 mb-1">PAYMENT</h4>
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <span className="text-sm capitalize">{order.paymentType}</span>
+                                                        <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                                            getPaymentBadge(order.isPaid, order.paymentStatus)
+                                                        }`}>
+                                                            {order.isPaid ? 'Verified' : order.paymentStatus}
+                                                        </span>
+                                                    </div>
+                                                    {order.paymentType === 'COD' && !order.isPaid && (
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                onClick={() => updatePaymentStatus(order._id, 'Verified')}
+                                                                disabled={updatingOrderId === order._id}
+                                                                className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded hover:bg-green-200 disabled:opacity-50"
+                                                            >
+                                                                {updatingOrderId === order._id ? 'Updating...' : 'Mark as Paid'}
+                                                            </button>
+                                                            <button
+                                                                onClick={() => updatePaymentStatus(order._id, 'Failed')}
+                                                                disabled={updatingOrderId === order._id}
+                                                                className="text-xs px-2 py-1 bg-red-100 text-red-800 rounded hover:bg-red-200 disabled:opacity-50"
+                                                            >
+                                                                {updatingOrderId === order._id ? 'Updating...' : 'Mark as Failed'}
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="mt-3">
+                                                    <h4 className="text-sm font-medium text-gray-500 mb-1">STATUS</h4>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {['Processing', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
+                                                            <button
+                                                                key={status}
+                                                                onClick={() => updateOrderStatus(order._id, status)}
+                                                                disabled={updatingOrderId === order._id || order.status === status}
+                                                                className={`text-xs px-2 py-1 rounded ${
+                                                                    order.status === status 
+                                                                        ? 'bg-blue-100 text-blue-800 cursor-default'
+                                                                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                                                                } ${updatingOrderId === order._id ? 'opacity-50' : ''}`}
+                                                            >
+                                                                {status}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default Orders;

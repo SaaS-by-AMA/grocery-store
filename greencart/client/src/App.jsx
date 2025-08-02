@@ -5,13 +5,10 @@ import Home from './pages/Home'
 import { Toaster } from "react-hot-toast";
 import Footer from './components/Footer';
 import { useAppContext } from './context/AppContext';
-import Login from './components/Login';
 import AllProducts from './pages/AllProducts';
 import ProductCategory from './pages/ProductCategory';
 import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
-import AddAddress from './pages/AddAddress';
-import MyOrders from './pages/MyOrders';
 import SellerLogin from './components/seller/SellerLogin';
 import SellerLayout from './pages/seller/SellerLayout';
 import AddProduct from './pages/seller/AddProduct';
@@ -20,41 +17,46 @@ import Orders from './pages/seller/Orders';
 import Loading from './components/Loading';
 import WhatsAppButton from './components/WhatsappButton';
 import Checkout from './pages/Checkout';
-
+import OrderConfirmation from './pages/order-confirmation';
 
 const App = () => {
-
   const isSellerPath = useLocation().pathname.includes("seller");
-  const {showUserLogin, isSeller} = useAppContext()
+  const { isSeller } = useAppContext(); // Removed showUserLogin from destructuring
 
   return (
     <div className='text-default min-h-screen text-gray-700 bg-white'>
+      {/* Seller paths don't show navbar */}
+      {isSellerPath ? null : <Navbar/>} 
 
-     {isSellerPath ? null : <Navbar/>} 
-     {showUserLogin ? <Login/> : null}
-
-     <Toaster />
+      {/* Global toast notifications */}
+      <Toaster />
 
       <div className={`${isSellerPath ? "" : "px-2 md:px-6 lg:px-10 xl:px-12"}`}>
         <Routes>
+          {/* Customer Routes */}
           <Route path='/' element={<Home/>} />
           <Route path='/products' element={<AllProducts/>} />
           <Route path='/products/:category' element={<ProductCategory/>} />
           <Route path='/products/:category/:id' element={<ProductDetails/>} />
           <Route path='/cart' element={<Cart/>} />
           <Route path='/checkout' element={<Checkout />} />
-          <Route path='/add-address' element={<AddAddress/>} />
-          <Route path='/my-orders' element={<MyOrders/>} />
-          <Route path='/loader' element={<Loading/>} />
+          <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
+          
+          {/* Seller Routes */}
           <Route path='/seller' element={isSeller ? <SellerLayout/> : <SellerLogin/>}>
             <Route index element={isSeller ? <AddProduct/> : null} />
             <Route path='product-list' element={<ProductList/>} />
             <Route path='orders' element={<Orders/>} />
           </Route>
+
+          {/* Utility Routes */}
+          <Route path='/loader' element={<Loading/>} />
         </Routes>
       </div>
-     {!isSellerPath && <Footer/>}
-     {!isSellerPath && <WhatsAppButton />}
+
+      {/* Footer and WhatsApp button only for customer paths */}
+      {!isSellerPath && <Footer/>}
+      {!isSellerPath && <WhatsAppButton />}
     </div>
   )
 }
