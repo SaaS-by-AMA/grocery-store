@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,6 +10,7 @@ const Navbar = () => {
   const [mobileSearchValue, setMobileSearchValue] = useState("");
   const menuRef = useRef();
   const hamburgerRef = useRef();
+  const location = useLocation();
 
   const {
     navigate,
@@ -18,12 +19,20 @@ const Navbar = () => {
     getCartCount,
   } = useAppContext();
 
-useEffect(() => {
-  if (searchQuery.length > 0 && window.location.pathname !== "/products") {
-    navigate("/products");
-  }
-}, [searchQuery, navigate]);
-
+  useEffect(() => {
+    // Only redirect if we're not already on the products page or a product detail page
+    if (searchQuery.length > 0 && 
+        !location.pathname.startsWith("/products") && 
+        !location.pathname.startsWith("/product/")) {
+      navigate("/products");
+    }
+    
+    // Clear search when navigating away from products page
+    if (!location.pathname.startsWith("/products") && searchQuery.length > 0) {
+      setSearchQuery("");
+      setMobileSearchValue("");
+    }
+  }, [searchQuery, navigate, location.pathname, setSearchQuery]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -114,11 +123,12 @@ useEffect(() => {
         <div className="hidden sm:flex items-center gap-8">
           <NavLink to="/">Home</NavLink>
           <NavLink to="/products">All Products</NavLink>
-          <NavLink to="/">Contact Us</NavLink>
+          <NavLink to="/contact-us">Contact Us</NavLink>
 
           <div className="hidden lg:flex items-center text-sm gap-2 border border-gray-300 px-3 rounded-full">
             <input
               onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchQuery}
               className="py-1.5 w-full bg-transparent outline-none placeholder-gray-500"
               type="text"
               placeholder="Search products"
@@ -139,13 +149,9 @@ useEffect(() => {
               {getCartCount()}
             </button>
           </div>
-
-          {/* Avatar icon (optional) */}
-         
         </div>
 
         <div className="flex items-center gap-6 sm:hidden">
-          {/* Mobile search icon */}
           <button
             onClick={() => {
               setMobileSearch((prev) => !prev);
@@ -262,7 +268,7 @@ useEffect(() => {
               
               <motion.div variants={menuItemVariants}>
                 <NavLink 
-                  to="/" 
+                  to="/contact-us" 
                   onClick={() => setOpen(false)}
                   className="block w-full p-2 rounded-md hover:bg-gray-50 transition-colors duration-200"
                 >
