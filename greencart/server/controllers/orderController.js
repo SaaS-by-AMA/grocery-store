@@ -34,22 +34,82 @@ export const placeOrderCOD = async (req, res) => {
       status: "Order Placed",
     });
 
-    // Send Email Notification
+    // Build detailed product list with price and quantity
+    let subtotal = 0;
+
+    const detailedItems = await Promise.all(
+      items.map(async (item) => {
+        const product = await Product.findById(item.product);
+        const price = product.offerPrice;
+        const total = price * item.quantity;
+        subtotal += total;
+        return {
+          name: product.name,
+          quantity: item.quantity,
+          price,
+          total,
+        };
+      })
+    );
+
+    //  Now calculate tax and total amount
+    const tax = Math.round(subtotal * 0.02); // 2% tax
+    const totalAmount = subtotal + tax;
+
     await sendOrderEmail({
       to: process.env.EMAIL_USER,
-      subject: "New Order Placed on Al Ghani Grocery",
+      subject: "New Order Placed on Al-Ghani Mart",
       html: `
-    <h3>New Order Received</h3>
-    <p><strong>Order ID:</strong> ${newOrder._id}</p>
-    <p><strong>Address:</strong> ${address}</p>
-    <p><strong>Total Amount:</strong> Rs. ${amount}</p>
-    <p><strong>Payment Type:</strong> Cash on Delivery</p>
-    <p><strong>Status:</strong> ${newOrder.status}</p>
-    <hr />
-    <h4>Items:</h4>
-    
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2d3748; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">New Order Received</h2>
+      
+      <h3 style="color: #4a5568; margin-top: 20px;">Order Details</h3>
+      <p><strong>Order ID:</strong> ${newOrder._id}</p>
+      <p><strong>Order Date:</strong> ${new Date().toLocaleString()}</p>
+      <p><strong>Payment Type:</strong> Cash on Delivery</p>
+      <p><strong>Status:</strong> ${newOrder.status}</p>
+      
+      <h3 style="color: #4a5568; margin-top: 20px;">Customer Information</h3>
+      <p><strong>Name:</strong> ${address.firstName} ${address.lastName}</p>
+      <p><strong>Phone:</strong> ${address.phone}</p>
+      <p><strong>Address:</strong> ${address.street}, ${address.town}</p>
+      
+      <h3 style="color: #4a5568; margin-top: 20px;">Order Summary</h3>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+          <tr style="background-color: #f7fafc; text-align: left;">
+            <th style="padding: 8px; border: 1px solid #e2e8f0;">Item</th>
+            <th style="padding: 8px; border: 1px solid #e2e8f0;">Qty</th>
+            <th style="padding: 8px; border: 1px solid #e2e8f0;">Price</th>
+            <th style="padding: 8px; border: 1px solid #e2e8f0;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${detailedItems
+            .map(
+              (item) => `
+            <tr>
+              <td style="padding: 8px; border: 1px solid #e2e8f0;">${item.name}</td>
+              <td style="padding: 8px; border: 1px solid #e2e8f0;">${item.quantity}</td>
+              <td style="padding: 8px; border: 1px solid #e2e8f0;">Rs. ${item.price}</td>
+              <td style="padding: 8px; border: 1px solid #e2e8f0;">Rs. ${item.total}</td>
+            </tr>
+          `
+            )
+            .join("")}
+        </tbody>
+      </table>
+      
+      <div style="margin-top: 20px; padding-top: 10px; border-top: 2px solid #e2e8f0;">
+        <p style="text-align: right;"><strong>Subtotal:</strong> Rs. ${subtotal}</p>
+        <p style="text-align: right;"><strong>Tax (2%):</strong> Rs. ${tax}</p>
+        <p style="text-align: right; font-size: 1.2em; font-weight: bold;">Total Amount: Rs. ${totalAmount}</p>
+      </div>
+
+    </div>
   `,
     });
+
     return res.json({
       success: true,
       message: "Order Placed Successfully",
