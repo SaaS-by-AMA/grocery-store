@@ -315,7 +315,7 @@ function Checkout() {
                 <button
                   type="submit"
                   disabled={isSubmitting || Object.keys(cartItems).length === 0}
-                  className={`w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+                  className={`w-full py-3 px-4 bg-primary hover:bg-[#5ee5a6] text-white font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
                     isSubmitting ? "opacity-70 cursor-not-allowed" : ""
                   }`}
                 >
