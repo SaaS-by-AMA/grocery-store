@@ -18,11 +18,12 @@ const Navbar = () => {
     getCartCount,
   } = useAppContext();
 
-  useEffect(() => {
-    if (searchQuery.length > 0) {
-      navigate("/products");
-    }
-  }, [searchQuery, navigate]);
+useEffect(() => {
+  if (searchQuery.length > 0 && window.location.pathname !== "/products") {
+    navigate("/products");
+  }
+}, [searchQuery, navigate]);
+
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -140,9 +141,7 @@ const Navbar = () => {
           </div>
 
           {/* Avatar icon (optional) */}
-          <div className="relative">
-            <img src={assets.profile_icon} className="w-10" alt="profile" />
-          </div>
+         
         </div>
 
         <div className="flex items-center gap-6 sm:hidden">

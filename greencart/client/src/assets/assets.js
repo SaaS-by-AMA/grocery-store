@@ -113,7 +113,7 @@ export const categories = [
   },
   {
     text: "Grocery Non-Foods",
-    path: "Foods",
+    path: "Non-Food grocery",
     image: groceryNonFoods,
     bgColor: "#FEE0E0",
   },
@@ -125,7 +125,7 @@ export const categories = [
   },
   {
     text: "Instant Food",
-    path: "Instant",
+    path: "Instant Food",
     image: maggi_image,
     bgColor: "#E1F5EC",
   },

@@ -14,3 +14,8 @@
 .no-scrollbar::-webkit-scrollbar{
   display: none;
 }
+/*Custom Highlighter*/
+::selection {
+  background-color: #4fbf8b; /* Tailwind's slate-900 */
+  color: #ffffff;            /* Tailwind's slate-50 */
+}

@@ -303,7 +303,7 @@ const PromoBar = () => {
 
             <motion.div>
               <motion.a
-                href="/signup"
+                href="/products"
                 className="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white font-semibold text-lg lg:text-xl px-8 py-4 lg:px-10 lg:py-5 rounded-full shadow-lg"
                 variants={buttonVariants}
                 whileHover="hover"
