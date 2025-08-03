@@ -18,6 +18,7 @@ import Loading from './components/Loading';
 import WhatsAppButton from './components/WhatsappButton';
 import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/order-confirmation';
+import Contact from './pages/Contact';
 
 const App = () => {
   const isSellerPath = useLocation().pathname.includes("seller");
@@ -41,6 +42,7 @@ const App = () => {
           <Route path='/cart' element={<Cart/>} />
           <Route path='/checkout' element={<Checkout />} />
           <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
+          <Route path="/contact-us" element={<Contact/>}/>
           
           {/* Seller Routes */}
           <Route path='/seller' element={isSeller ? <SellerLayout/> : <SellerLogin/>}>

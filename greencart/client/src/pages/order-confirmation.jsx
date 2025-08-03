@@ -43,7 +43,11 @@ const OrderConfirmation = () => {
   if (!order) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
-        <img src={assets.error_icon} alt="Error" className="w-20 h-20 mb-4" />
+        <div className="w-20 h-20 mb-4 flex items-center justify-center text-red-500">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
         <h2 className="text-xl font-medium mb-2">Order Not Found</h2>
         <button 
           onClick={() => navigate('/')}
@@ -64,7 +68,22 @@ const OrderConfirmation = () => {
       <div className="bg-white rounded-lg shadow-md p-6 md:p-8">
         {/* Order Confirmation Header */}
         <div className="text-center mb-8">
-          <img src={assets.success_icon} alt="Success" className="w-16 h-16 mx-auto mb-4" />
+          <div className="w-20 h-20 mx-auto mb-4 flex items-center justify-center bg-green-100 rounded-full">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="h-12 w-12 text-green-600" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M5 13l4 4L19 7" 
+              />
+            </svg>
+          </div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Order Confirmed!</h1>
           <p className="text-gray-600">Thank you for your purchase</p>
           <p className="text-sm text-gray-500 mt-2">Order ID: {order._id}</p>
@@ -78,7 +97,7 @@ const OrderConfirmation = () => {
             {order.items.map((item, index) => (
               <div key={index} className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center overflow-hidden">
                     {item.product?.image ? (
                       <img 
                         src={item.product.image[0]} 
@@ -86,11 +105,20 @@ const OrderConfirmation = () => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <img 
-                        src={assets.box_icon} 
-                        alt="Product"
-                        className="w-6 h-6 opacity-50"
-                      />
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="w-6 h-6 text-gray-400" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round" 
+                          strokeWidth={2} 
+                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" 
+                        />
+                      </svg>
                     )}
                   </div>
                   <div>
