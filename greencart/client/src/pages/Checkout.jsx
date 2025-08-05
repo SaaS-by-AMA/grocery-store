@@ -168,22 +168,19 @@ function Checkout() {
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal</span>
                 <span className="font-medium">
-                  {currency}.{" "}
-                  {subtotal.toFixed(2)}
+                  {currency}. {subtotal.toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Tax (2%)</span>
                 <span className="font-medium">
-                  {currency}.{" "}
-                  {tax.toFixed(2)}
+                  {currency}. {tax.toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-lg font-bold mt-2">
                 <span>Total</span>
                 <span>
-                  {currency}.{" "}
-                  {totalAmount.toFixed(2)}
+                  {currency}. {totalAmount.toFixed(2)}
                 </span>
               </div>
             </div>
