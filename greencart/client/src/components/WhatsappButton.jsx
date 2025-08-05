@@ -3,7 +3,7 @@ import whatsappIcon from "../assets/wa.webp";
 
 const WhatsAppButton = () => {
   const whatsappNumber = "923014595772";
-  const message = "Hello! I want to order something...";
+  const message = "";
 
   const handleClick = () => {
     window.open(
@@ -42,8 +42,8 @@ const WhatsAppButton = () => {
           />
           
           
-          <div className="absolute -top-10 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-            Chat with us
+          <div className="absolute -top-10 right-0 bg-gray-800 text-white text-[10px] sm:text-xs px-2 py-1 rounded opacity-50 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+            Contact on WhatsApp
             <div className="absolute bottom-0 right-3 w-2 h-2 bg-gray-800 transform rotate-45 -mb-1"></div>
           </div>
         </div>
