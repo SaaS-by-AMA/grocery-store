@@ -36,98 +36,101 @@ const FramerHeroCarousel = () => {
   // Combine both image sets with their mobile counterparts
   const slides = desktopImages.map((desktopImg, index) => ({
     desktop: desktopImg,
-    mobile: mobileImages[index]
+    mobile: mobileImages[index],
   }));
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden mt-15 cursor-grab select-none">
-      <Swiper
-        modules={[Autoplay, Navigation, Pagination, EffectFade]}
-        spaceBetween={0}
-        slidesPerView={1}
-        loop={true}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-        }}
-        speed={800}
-        effect="slide"
-        fadeEffect={{ crossFade: true }}
-        navigation={{
-          nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev",
-        }}
-        pagination={{
-          clickable: true,
-          el: ".swiper-pagination",
-          type: "bullets",
-          bulletClass: "swiper-bullet",
-          bulletActiveClass: "swiper-bullet-active",
-        }}
-        className="h-[35vh] sm:h-[60vh] lg:h-[80vh]"
-      >
-        {slides.map((slide, index) => (
-          <SwiperSlide key={index}>
-            <div className="w-full h-full relative">
-              {/* Mobile Image */}
-              <img
-                src={slide.mobile}
-                alt={`Slide ${index}`}
-                className="w-full h-full object-cover object-center md:hidden"
-                loading="lazy"
-              />
-              {/* Desktop Image */}
-              <img
-                src={slide.desktop}
-                alt={`Slide ${index}`}
-                className="w-full h-full object-cover object-center hidden md:block"
-                loading="lazy"
-              />
-              {/* Optional overlay */}
-              <div className="absolute inset-0 bg-black/10"></div>
-            </div>
-          </SwiperSlide>
-        ))}
+    <div>
+      <p className='text-2xl md:text-4xl font-medium mt-15'>Find What You Need</p>
+      <div className="relative w-full rounded-2xl overflow-hidden mt-6 cursor-grab select-none">
+        <Swiper
+          modules={[Autoplay, Navigation, Pagination, EffectFade]}
+          spaceBetween={0}
+          slidesPerView={1}
+          loop={true}
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+          }}
+          speed={800}
+          effect="slide"
+          fadeEffect={{ crossFade: true }}
+          navigation={{
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+          }}
+          pagination={{
+            clickable: true,
+            el: ".swiper-pagination",
+            type: "bullets",
+            bulletClass: "swiper-bullet",
+            bulletActiveClass: "swiper-bullet-active",
+          }}
+          className="h-[35vh] sm:h-[60vh] lg:h-[80vh]"
+        >
+          {slides.map((slide, index) => (
+            <SwiperSlide key={index}>
+              <div className="w-full h-full relative">
+                {/* Mobile Image */}
+                <img
+                  src={slide.mobile}
+                  alt={`Slide ${index}`}
+                  className="w-full h-full object-cover object-center md:hidden"
+                  loading="lazy"
+                />
+                {/* Desktop Image */}
+                <img
+                  src={slide.desktop}
+                  alt={`Slide ${index}`}
+                  className="w-full h-full object-cover object-center hidden md:block"
+                  loading="lazy"
+                />
+                {/* Optional overlay */}
+                <div className="absolute inset-0 bg-black/10"></div>
+              </div>
+            </SwiperSlide>
+          ))}
 
-        {/* Custom Navigation Buttons */}
-        <div className="swiper-button-prev !left-4 !w-10 !h-10 sm:!w-12 sm:!h-12 !text-white !bg-black/40 hover:!bg-black/60 !backdrop-blur-sm !rounded-full !transition-all !duration-300 after:!text-sm sm:after:!text-base after:!font-bold">
-          ❮
-        </div>
-        <div className="swiper-button-next !right-4 !w-10 !h-10 sm:!w-12 sm:!h-12 !text-white !bg-black/40 hover:!bg-black/60 !backdrop-blur-sm !rounded-full !transition-all !duration-300 after:!text-sm sm:after:!text-base after:!font-bold">
-          ❯
-        </div>
+          {/* Custom Navigation Buttons */}
+          <div className="swiper-button-prev !left-4 !w-10 !h-10 sm:!w-12 sm:!h-12 !text-white !bg-black/40 hover:!bg-black/60 !backdrop-blur-sm !rounded-full !transition-all !duration-300 after:!text-sm sm:after:!text-base after:!font-bold">
+            ❮
+          </div>
+          <div className="swiper-button-next !right-4 !w-10 !h-10 sm:!w-12 sm:!h-12 !text-white !bg-black/40 hover:!bg-black/60 !backdrop-blur-sm !rounded-full !transition-all !duration-300 after:!text-sm sm:after:!text-base after:!font-bold">
+            ❯
+          </div>
 
-        {/* Custom Pagination */}
-        <div className="swiper-pagination !bottom-4 !left-1/2 !-translate-x-1/2 !flex !justify-center !gap-2"></div>
-      </Swiper>
+          {/* Custom Pagination */}
+          <div className="swiper-pagination !bottom-4 !left-1/2 !-translate-x-1/2 !flex !justify-center !gap-2"></div>
+        </Swiper>
 
-      {/* Custom CSS for Swiper elements */}
-      <style jsx global>{`
-        .swiper-bullet {
-          width: 12px;
-          height: 12px;
-          background: rgba(255, 255, 255, 0.5);
-          opacity: 1;
-          transition: all 0.3s ease;
-        }
-        
-        .swiper-bullet-active {
-          background: white;
-          width: 24px;
-          box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-        }
-        
-        .swiper-button-prev:after, 
-        .swiper-button-next:after {
-          font-size: 1rem;
-          font-weight: bold;
-        }
-        
-        .swiper-button-prev:hover, 
-        .swiper-button-next:hover {
-          transform: scale(1.1);
-        }
-      `}</style>
+        {/* Custom CSS for Swiper elements */}
+        <style jsx global>{`
+          .swiper-bullet {
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 1;
+            transition: all 0.3s ease;
+          }
+
+          .swiper-bullet-active {
+            background: white;
+            width: 24px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+          }
+
+          .swiper-button-prev:after,
+          .swiper-button-next:after {
+            font-size: 1rem;
+            font-weight: bold;
+          }
+
+          .swiper-button-prev:hover,
+          .swiper-button-next:hover {
+            transform: scale(1.1);
+          }
+        `}</style>
+      </div>
     </div>
   );
 };
