@@ -10,6 +10,7 @@ import AllProducts from './pages/AllProducts';
 import ProductCategory from './pages/ProductCategory';
 import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
+import FramerHeroCarousel from './components/FramerHeroCarousel';
 import SellerLogin from './components/seller/SellerLogin';
 import SellerLayout from './pages/seller/SellerLayout';
 import AddProduct from './pages/seller/AddProduct';
@@ -57,7 +58,7 @@ const App = () => {
           <Route path='/loader' element={<Loading/>} />
         </Routes>
       </div>
-
+      
       {/* Footer and WhatsApp button only for customer paths */}
       {!isSellerPath && <Footer/>}
       {!isSellerPath && <WhatsAppButton />}
