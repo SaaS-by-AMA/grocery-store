@@ -222,7 +222,7 @@ const PromoBar = () => {
             {/* Mobile Button */}
             <motion.div className="pt-2">
               <motion.a
-                href="/signup"
+                href="/products"
                 className="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white font-semibold text-lg px-8 py-4 rounded-full shadow-lg"
                 variants={buttonVariants}
                 whileHover="hover"
