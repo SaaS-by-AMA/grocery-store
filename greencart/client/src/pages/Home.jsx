@@ -6,10 +6,13 @@ import BottomBanner from '../components/BottomBanner'
 import NewsLetter from '../components/NewsLetter'
 import FramerHeroCarousel from '../components/FramerHeroCarousel'
 import PromoBar from '../components/PromoBar'
+import StoreGallery from '../components/StoreGallery'
+
 
 const Home = () => {
   return (
-    <div className='mt-10'>
+    <div className=''>
+
       <PromoBar />
       <Categories />
       <BestSeller />

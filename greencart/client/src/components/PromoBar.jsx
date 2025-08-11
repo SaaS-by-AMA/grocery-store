@@ -124,7 +124,7 @@ const PromoBar = () => {
   return (
     <motion.section 
       ref={ref}
-      className="w-full rounded-2xl mb-7 bg-gradient-to-r from-[#0a2e1a] via-[#0f3f1a] to-[#1a5a2a] text-white overflow-hidden"
+      className="w-full rounded-2xl mt-4 mb-7 bg-gradient-to-r from-[#0a2e1a] via-[#0f3f1a] to-[#1a5a2a] text-white overflow-hidden"
       variants={containerVariants}
       initial="hidden"
       animate={isVisible ? "visible" : "hidden"}
@@ -201,7 +201,7 @@ const PromoBar = () => {
                   repeatDelay: 3
                 }}
               >
-                500
+                1000
               </motion.span>
               {' '}- Shop now!
             </motion.p>
@@ -296,7 +296,7 @@ const PromoBar = () => {
                   repeatDelay: 3
                 }}
               >
-                500
+                1000
               </motion.span>
               {' '} - Shop now!
             </motion.p>
@@ -390,7 +390,7 @@ const PromoBar = () => {
               ease: "easeInOut"
             }}
           >
-            *Valid for first 5 orders. Service fees and terms apply.
+            *Valid for first 10 orders. Service fees and terms apply.
           </motion.p>
         </motion.div>
       </div>
