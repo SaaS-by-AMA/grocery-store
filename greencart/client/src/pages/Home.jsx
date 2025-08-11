@@ -6,7 +6,6 @@ import BottomBanner from '../components/BottomBanner'
 import NewsLetter from '../components/NewsLetter'
 import FramerHeroCarousel from '../components/FramerHeroCarousel'
 import PromoBar from '../components/PromoBar'
-import StoreGallery from '../components/StoreGallery'
 
 
 const Home = () => {
@@ -17,6 +16,7 @@ const Home = () => {
       <Categories />
       <BestSeller />
       <BottomBanner/>
+      <FramerHeroCarousel/>
     </div>
   )
 }
