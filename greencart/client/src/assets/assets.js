@@ -166,14 +166,7 @@ export const footerLinks = [
       { text: "Contact Us", url: "/contact-us" },
     ],
   },
-  {
-    title: "Follow Us",
-    links: [
-      { text: "Instagram", url: "#" },
-      { text: "Facebook", url: "#" },
-      { text: "YouTube", url: "#" },
-    ],
-  },
+  
 ];
 
 export const features = [
