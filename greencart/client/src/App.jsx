@@ -3,6 +3,7 @@ import Navbar from './components/Navbar'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
 import { Toaster } from "react-hot-toast";
+import Features from './components/Features'
 import Footer from './components/Footer';
 import { useAppContext } from './context/AppContext';
 import AllProducts from './pages/AllProducts';
@@ -28,11 +29,12 @@ const App = () => {
     <div className='text-default min-h-screen text-gray-700 bg-white'>
       {/* Seller paths don't show navbar */}
       {isSellerPath ? null : <Navbar/>} 
+      {isSellerPath ? null :<Features/>} 
 
       {/* Global toast notifications */}
       <Toaster />
 
-      <div className={`${isSellerPath ? "" : "px-2 md:px-6 lg:px-10 xl:px-12"}`}>
+      <div className={`${isSellerPath ? "" : "px-2 md:px-6 lg:px-10 xl:px-14"}`}>
         <Routes>
           {/* Customer Routes */}
           <Route path='/' element={<Home/>} />
