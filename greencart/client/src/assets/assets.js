@@ -154,15 +154,15 @@ export const footerLinks = [
     title: "Quick Links",
     links: [
       { text: "Home", url: "/" },
-      { text: "Best Sellers", url: "#" },
-      { text: "Contact Us", url: "/contact-us" },
+      { text: "Best Sellers", url: "/" },
+      { text: "About Us", url: "/about" },
     ],
   },
   {
     title: "Need help?",
     links: [
-      { text: "Delivery Information", url: "#" },
-      { text: "Payment Methods", url: "#" },
+      { text: "Delivery Information", url: "/delievery" },
+      { text: "Payment Methods", url: "/payment" },
       { text: "Contact Us", url: "/contact-us" },
     ],
   },

@@ -7,15 +7,18 @@ import Features from './components/Features'
 import Footer from './components/Footer';
 import { useAppContext } from './context/AppContext';
 import AllProducts from './pages/AllProducts';
+import AboutUs from './pages/AboutUs';
 import ProductCategory from './pages/ProductCategory';
 import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
 import FramerHeroCarousel from './components/FramerHeroCarousel';
 import SellerLogin from './components/seller/SellerLogin';
 import SellerLayout from './pages/seller/SellerLayout';
+import PaymentInfo from './pages/PaymentInfo';
 import AddProduct from './pages/seller/AddProduct';
 import ProductList from './pages/seller/ProductList';
 import Orders from './pages/seller/Orders';
+import DeliveryInfo from './pages/DelieveryInfo';
 import Loading from './components/Loading';
 import WhatsAppButton from './components/WhatsappButton';
 import Checkout from './pages/Checkout';
@@ -39,6 +42,9 @@ const App = () => {
         <Routes>
           {/* Customer Routes */}
           <Route path='/' element={<Home/>} />
+          <Route path='/about' element={<AboutUs/>} />
+          <Route path='/payment' element={<PaymentInfo/>} />
+          <Route path='/delievery' element={<DeliveryInfo/>} />
           <Route path='/products' element={<AllProducts/>} />
           <Route path='/products/:category' element={<ProductCategory/>} />
           <Route path='/products/:category/:id' element={<ProductDetails/>} />
@@ -58,7 +64,7 @@ const App = () => {
           <Route path='/loader' element={<Loading/>} />
         </Routes>
       </div>
-      
+
       {/* Footer and WhatsApp button only for customer paths */}
       {!isSellerPath && <Footer/>}
       {!isSellerPath && <WhatsAppButton />}
