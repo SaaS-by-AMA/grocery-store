@@ -18,7 +18,7 @@ await connectDB();
 await connectCloudinary();
 
 // Allow multiple origins
-const allowedOrigins = ['http://localhost:5173', ''] // Add your production URL
+const allowedOrigins = ['http://localhost:5173', 'https://alghani.store'] // Add your production URL
 
 // Middleware configuration
 app.use(express.json());
