@@ -50,6 +50,46 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
+  // Delete product permanently (for seller)
+  const deleteProduct = async (id) => {
+    try {
+      const { data } = await axios.delete(`/api/product/${id}`);
+      if (data.success) {
+        // remove from local products state
+        setProducts((prev) => prev.filter((p) => p._id !== id));
+        toast.success(data.message);
+        return { success: true };
+      } else {
+        toast.error(data.message);
+        return { success: false };
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+      return { success: false };
+    }
+  };
+
+  // Update product (partial update) (for seller)
+  const updateProduct = async (id, updates) => {
+    try {
+      const { data } = await axios.patch(`/api/product/${id}`, updates);
+      if (data.success) {
+        // replace product in state
+        setProducts((prev) =>
+          prev.map((p) => (p._id === id ? data.product : p))
+        );
+        toast.success(data.message);
+        return { success: true, product: data.product };
+      } else {
+        toast.error(data.message);
+        return { success: false };
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+      return { success: false };
+    }
+  };
+
   // Add Product to Cart (localStorage)
   const addToCart = (itemId) => {
     setCartItems((prevItems) => {
@@ -180,9 +220,11 @@ export const AppContextProvider = ({ children }) => {
     getCartCount,
     axios,
     fetchProducts,
+    deleteProduct,
+    updateProduct,
     setCartItems,
     decreaseQty,
-    increaseQty
+    increaseQty,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
