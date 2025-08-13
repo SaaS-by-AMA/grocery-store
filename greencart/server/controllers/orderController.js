@@ -2,6 +2,22 @@ import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import { sendOrderEmail } from "../utils/SendOrderEmail.js";
 
+
+// Pakistan Time Formatter
+function formatPakistanTime(date) {
+  return new Intl.DateTimeFormat('en-PK', {
+    timeZone: 'Asia/Karachi',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  }).format(date);
+}
+
+
 export const placeOrderCOD = async (req, res) => {
   try {
     const { items, address } = req.body;
@@ -56,6 +72,12 @@ export const placeOrderCOD = async (req, res) => {
     const tax = Math.round(subtotal * 0.02); // 2% tax
     const totalAmount = subtotal + tax;
 
+    // Format createdAt to Pakistan time
+    const orderDate = formatPakistanTime(newOrder.createdAt);
+
+    console.log("Raw createdAt:", newOrder.createdAt);
+console.log("Formatted Pakistan time:", orderDate);
+
     await sendOrderEmail({
       to: process.env.EMAIL_USER,
       subject: "New Order Placed on Al-Ghani Mart",
@@ -65,7 +87,9 @@ export const placeOrderCOD = async (req, res) => {
       
       <h3 style="color: #4a5568; margin-top: 20px;">Order Details</h3>
       <p><strong>Order ID:</strong> ${newOrder._id}</p>
-      <p><strong>Order Date:</strong> ${new Date().toLocaleString()}</p>
+      <p><strong>Order Date:</strong> ${orderDate}</p>
+
+
       <p><strong>Payment Type:</strong> Cash on Delivery</p>
       <p><strong>Status:</strong> ${newOrder.status}</p>
       
