@@ -2,7 +2,7 @@ import React from "react";
 import whatsappIcon from "../assets/wa.webp";
 
 const WhatsAppButton = () => {
-  const whatsappNumber = "923014595772";
+  const whatsappNumber = "923405460286";
   const message = "";
 
   const handleClick = () => {
