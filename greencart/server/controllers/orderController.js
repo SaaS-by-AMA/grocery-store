@@ -259,12 +259,7 @@ export const updatePaymentStatus = async (req, res) => {
 
 export const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find().populate("items.product").sort({
-      isPaid: 1, // Unpaid orders first
-      paymentStatus: 1, // Pending payments first
-      status: 1, // New orders first
-      createdAt: -1, // Recent orders first
-    });
+    const orders = await Order.find().populate("items.product").sort({ createdAt: -1 });
 
     res.json({
       success: true,
