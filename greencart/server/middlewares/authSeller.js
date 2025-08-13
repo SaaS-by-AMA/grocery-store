@@ -1,44 +1,44 @@
-import jwt from 'jsonwebtoken';
+// server/middlewares/authSeller.js
+import jwt from "jsonwebtoken";
 
 const authSeller = async (req, res, next) => {
-    try {
-        const token = req.cookies.sellerToken;
-        
-        if (!token) {
-            return res.status(401).json({ 
-                success: false, 
-                message: 'No authentication token provided' 
-            });
-        }
+  try {
+   
 
-        // Verify the token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
-        // Verify the email matches our seller email
-        if (decoded.email !== process.env.SELLER_EMAIL) {
-            return res.status(403).json({ 
-                success: false, 
-                message: 'Invalid credentials' 
-            });
-        }
-
-        // If everything is good, proceed
-        next();
-    } catch (error) {
-        console.error("Authentication error:", error);
-        
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({ 
-                success: false, 
-                message: 'Session expired. Please login again.' 
-            });
-        }
-        
-        return res.status(401).json({ 
-            success: false, 
-            message: 'Invalid authentication token' 
-        });
+    // Accept token from cookie OR Authorization header
+    let token = req.cookies?.sellerToken || req.cookies?.access || null;
+    if (!token && req.headers?.authorization?.startsWith("Bearer ")) {
+      token = req.headers.authorization.split(" ")[1];
     }
+
+    if (!token) {
+      return res.status(401).json({ success: false, message: "No authentication token provided" });
+    }
+
+    // Verify token
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      console.error("authSeller - token verify error:", err.message);
+      if (err.name === "TokenExpiredError") {
+        return res.status(401).json({ success: false, message: "Session expired. Please login again." });
+      }
+      return res.status(401).json({ success: false, message: "Invalid authentication token" });
+    }
+
+    // Attach seller info for controllers
+    req.seller = {
+      id: decoded.id || decoded._id || decoded.sub || null,
+      email: decoded.email || null,
+      role: decoded.role || null
+    };
+
+    return next();
+  } catch (error) {
+    console.error("authSeller unexpected error:", error);
+    return res.status(500).json({ success: false, message: "Server error in auth" });
+  }
 };
 
 export default authSeller;
