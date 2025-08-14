@@ -11,16 +11,18 @@ import perfume from "../assets/perfumes.webp";
 import sunglasses from "../assets/sunglasses.webp";
 import farmfields from "../assets/farmfields.webp";
 import facewash from "../assets/facewash.jpg";
+import grocery from "../assets/grocery2.webp";
 
 // Mobile images
 import perfume_m from "../assets/perfumes-mobile.webp";
 import sunglasses_m from "../assets/sunglasses-mobile.webp";
 import farmfields_m from "../assets/farmfields-mobile.webp";
 import facewash_m from "../assets/facewash-mobile.jpg";
+import grocery_m from "../assets/grocery2-mobile.webp";
 
 const FramerHeroCarousel = () => {
-  const desktopImages = [perfume, sunglasses, farmfields, facewash];
-  const mobileImages = [perfume_m, sunglasses_m, farmfields_m, facewash_m];
+  const desktopImages = [perfume, sunglasses, farmfields, facewash,grocery];
+  const mobileImages = [perfume_m, sunglasses_m, farmfields_m, facewash_m, grocery_m];
   const [isMobile, setIsMobile] = useState(false);
 
   // Check screen size
