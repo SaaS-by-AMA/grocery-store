@@ -1,5 +1,6 @@
+
 import { assets, footerLinks } from "../assets/assets";
-import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaWhatsapp, FaYoutube, FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
 
 const Footer = () => {
   return (
@@ -23,7 +24,6 @@ const Footer = () => {
             <a href="#" className="p-2 rounded-full bg-gray-200 hover:bg-primary transition">
               <FaInstagram className="text-gray-700 hover:text-white" />
             </a>
-            
             <a href="#" className="p-2 rounded-full bg-gray-200 hover:bg-primary transition">
               <FaYoutube className="text-gray-700 hover:text-white" />
             </a>
@@ -63,9 +63,37 @@ const Footer = () => {
       </div>
 
       {/* Bottom */}
-      <p className="py-4 text-center text-sm md:text-base text-gray-500/80">
-        Copyright {new Date().getFullYear()} © Al-Ghani Mart. All Rights Reserved.
-      </p>
+      <div className="py-6">
+        <p className="text-center text-sm md:text-base text-gray-500/80 mb-4">
+          Copyright {new Date().getFullYear()} © Al-Ghani Mart. All Rights Reserved.
+        </p>
+
+        <div className="bg-white/80 p-4 rounded-lg shadow-sm max-w-md mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-3">
+            <div className="text-center md:text-left">
+              <p className="text-sm font-semibold text-gray-700">
+                Website Developed by
+              </p>
+              <p className="text-lg font-bold text-blue-600">Cloudora Tech</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Software Development Solutions
+              </p>
+            </div>
+            
+            <div className="h-8 w-px bg-gray-300 hidden md:block"></div>
+            
+            <a 
+              href="https://wa.me/923444257032" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-green-100 hover:bg-green-200 rounded-full transition"
+            >
+              <FaWhatsapp className="text-lg text-green-600" />
+              <span className="text-sm font-medium text-green-700">Contact us</span>
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
