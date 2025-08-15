@@ -150,10 +150,7 @@ export const AppContextProvider = ({ children }) => {
       const newItems = { ...prevItems };
 
       if (newItems[itemId]) {
-        newItems[itemId] -= 1;
-        if (newItems[itemId] <= 0) {
-          delete newItems[itemId];
-        }
+        delete newItems[itemId];
       }
 
       // Save to localStorage

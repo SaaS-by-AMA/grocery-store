@@ -89,7 +89,7 @@ const Footer = () => {
               className="flex items-center gap-2 px-4 py-2 bg-green-100 hover:bg-green-200 rounded-full transition"
             >
               <FaWhatsapp className="text-lg text-green-600" />
-              <span className="text-sm font-medium text-green-700">Contact Developer</span>
+              <span className="text-sm font-medium text-green-700">Contact us</span>
             </a>
           </div>
         </div>
