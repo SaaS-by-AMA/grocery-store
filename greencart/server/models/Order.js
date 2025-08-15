@@ -30,8 +30,28 @@ const orderSchema = new mongoose.Schema({
         enum: ['Pending', 'Verified', 'Failed'],
         default: 'Pending'
     }
-}, { timestamps: true });
+}, { 
+    timestamps: true
+});
 
 const Order = mongoose.models.order || mongoose.model('order', orderSchema);
 
+// Function to ensure TTL index exists
+async function ensureTTLIndex() {
+    try {
+        await Order.collection.createIndex(
+            { "createdAt": 1 }, 
+            { 
+                name: "order_expiration_ttl",
+                expireAfterSeconds: 6000 // 30 days
+            }
+        );
+        console.log('TTL index created or verified');
+    } catch (error) {
+        console.error('Error creating TTL index:', error);
+    }
+}
+
+// Export both the model and the ensure function
+export { Order, ensureTTLIndex };
 export default Order;
