@@ -2,6 +2,12 @@ import { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import {
+  MIN_ORDER_AMOUNT,
+  DELIVERY_CHARGE,
+  FREE_DELIVERY_THRESHOLD,
+  TAX_RATE,
+} from "../context/AppContext";
 
 const Cart = () => {
   const {
@@ -15,7 +21,7 @@ const Cart = () => {
     clearCart,
     navigate,
     increaseQty,
-    decreaseQty
+    decreaseQty,
   } = useAppContext();
 
   const [cartArray, setCartArray] = useState([]);
@@ -35,17 +41,6 @@ const Cart = () => {
     setCartArray(tempArray);
   };
 
-  const placeOrder = async () => {
-    try {
-      toast.success("Order placed successfully!");
-      clearCart();
-      navigate("/");
-    } catch (error) {
-      toast.error("Failed to place order");
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
     if (products.length > 0 && Object.keys(cartItems).length > 0) {
       getCart();
@@ -53,6 +48,13 @@ const Cart = () => {
       setCartArray([]);
     }
   }, [products, cartItems]);
+
+  // Current subtotal and computed charges
+  const subtotal = getCartAmount();
+  const deliveryCharge =
+    subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
+  const tax = subtotal * TAX_RATE;
+  const totalAmount = subtotal + tax + deliveryCharge;
 
   if (products.length === 0) {
     return (
@@ -95,6 +97,14 @@ const Cart = () => {
     );
   }
 
+  const handleProceedClick = () => {
+    if (subtotal < MIN_ORDER_AMOUNT) {
+      toast.error(`Minimum order amount is Rs. ${MIN_ORDER_AMOUNT}`);
+      return;
+    }
+    navigate("/checkout");
+  };
+
   return (
     <div className="flex flex-col md:flex-row mt-16 px-4">
       <div className="flex-1 max-w-4xl">
@@ -133,7 +143,7 @@ const Cart = () => {
                 <p className="font-semibold">{product.name}</p>
                 <div className="font-normal text-gray-500/70">
                   <div className="flex items-center">
-                    <p>Quantity:</p>
+                    <p>Qty:</p>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => decreaseQty(product._id)}
@@ -153,9 +163,8 @@ const Cart = () => {
                 </div>
               </div>
             </div>
-            <p className="text-center">
-              {currency}
-              {(product.offerPrice * product.quantity).toFixed(2)}
+            <p className="text-center ml-3">
+              {currency}.{(product.offerPrice * product.quantity).toFixed(2)}
             </p>
             <button
               onClick={() => removeFromCart(product._id)}
@@ -210,36 +219,53 @@ const Cart = () => {
           <p className="flex justify-between">
             <span>Subtotal</span>
             <span>
-              {currency}
-              {getCartAmount().toFixed(2)}
+              {currency}.{subtotal.toFixed(2)}
             </span>
           </p>
           <p className="flex justify-between">
             <span>Shipping</span>
-            <span className="text-green-600">Free</span>
+            <span>
+              {currency}.{deliveryCharge.toFixed(2)}
+            </span>
           </p>
           <p className="flex justify-between">
-            <span>Tax (2%)</span>
+            <span>Tax ({(TAX_RATE * 100).toFixed(0)}%)</span>
             <span>
-              {currency}
-              {(getCartAmount() * 0.02).toFixed(2)}
+              {currency}.{tax.toFixed(2)}
             </span>
           </p>
           <p className="flex justify-between text-lg font-medium mt-3">
             <span>Total:</span>
             <span>
               {currency}
-              {(getCartAmount() * 1.02).toFixed(2)}
+              {totalAmount.toFixed(2)}
             </span>
           </p>
         </div>
 
         <button
-          onClick={() => navigate("/checkout")}
-          className="w-full py-3 mt-6 cursor-pointer bg-primary text-white font-medium hover:bg-primary-dull transition rounded"
+          onClick={handleProceedClick}
+          disabled={subtotal < MIN_ORDER_AMOUNT}
+          className={`w-full py-3 mt-6 text-white font-medium rounded transition
+            ${
+              subtotal < MIN_ORDER_AMOUNT
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-primary cursor-pointer hover:bg-primary-dull"
+            }
+          `}
         >
-          Proceed to Checkout
+          {subtotal < MIN_ORDER_AMOUNT
+            ? `Minimum Rs. ${MIN_ORDER_AMOUNT} Required`
+            : "Proceed to Checkout"}
         </button>
+
+        {/* Minimum Order Notice */}
+        {subtotal < MIN_ORDER_AMOUNT && (
+          <p className="mt-4 text-sm text-yellow-700 bg-yellow-100 border-l-4 border-yellow-500 p-3 rounded">
+            ⚠️ Minimum order amount is Rs. {MIN_ORDER_AMOUNT}. Orders below this
+            will not be processed.
+          </p>
+        )}
       </div>
     </div>
   );

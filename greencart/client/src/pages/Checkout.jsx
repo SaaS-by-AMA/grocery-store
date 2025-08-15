@@ -3,11 +3,26 @@ import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
 import toast from "react-hot-toast";
+import {
+  MIN_ORDER_AMOUNT,
+  DELIVERY_CHARGE,
+  FREE_DELIVERY_THRESHOLD,
+  TAX_RATE,
+} from "../context/AppContext";
+
+
+
 
 function Checkout() {
   const { cartItems, getCartAmount, clearCart, currency, axios, products } =
     useAppContext();
   const navigate = useNavigate();
+
+    const subtotal = getCartAmount();
+  const tax = subtotal * TAX_RATE;
+  const delivery_charges =
+    subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
+  const totalAmount = subtotal + tax + delivery_charges;
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -71,13 +86,14 @@ function Checkout() {
       return;
     }
 
+    if (subtotal < MIN_ORDER_AMOUNT) {
+      toast.error(`Minimum order amount is Rs. ${MIN_ORDER_AMOUNT}`);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      // Calculate total amount with tax
-      const subtotal = getCartAmount();
-      const tax = subtotal * 0.02;
-      const totalAmount = subtotal + tax;
 
       // Prepare order data
       const orderData = {
@@ -119,9 +135,7 @@ function Checkout() {
     }
   };
 
-  const subtotal = getCartAmount();
-  const tax = subtotal * 0.02;
-  const totalAmount = subtotal + tax;
+
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -171,11 +185,20 @@ function Checkout() {
                   {currency}. {subtotal.toFixed(2)}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Tax (2%)</span>
-                <span className="font-medium">
-                  {currency}. {tax.toFixed(2)}
-                </span>
+              <div className="flex justify-between flex-col">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Tax (0%)</span>
+                  <span className="font-medium">
+                    {currency}.{tax.toFixed(2)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between mt-3">
+                  <span className="text-gray-600">Delievery Charges:</span>
+                  <span className="font-medium">
+                    {currency}.{delivery_charges.toFixed(2)}
+                  </span>
+                </div>
               </div>
               <div className="flex justify-between text-lg font-bold mt-2">
                 <span>Total</span>
@@ -382,12 +405,24 @@ function Checkout() {
               <div className="pt-4">
                 <button
                   type="submit"
-                  disabled={isSubmitting || Object.keys(cartItems).length === 0}
-                  className={`w-full py-3 px-4 bg-primary hover:bg-[#5ee5a6] text-white font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
-                    isSubmitting ? "opacity-70 cursor-not-allowed" : ""
-                  }`}
+                  disabled={
+                    isSubmitting ||
+                    Object.keys(cartItems).length === 0 ||
+                    subtotal < MIN_ORDER_AMOUNT
+                  }
+                  className={`w-full py-3 px-4 bg-primary hover:bg-[#5ee5a6] 
+              text-white font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 
+              focus:ring-offset-2 focus:ring-green-500 ${
+                isSubmitting || subtotal < MIN_ORDER_AMOUNT
+                  ? "opacity-70 cursor-not-allowed"
+                  : ""
+              }`}
                 >
-                  {isSubmitting ? "Processing..." : "Place Order"}
+                  {subtotal < MIN_ORDER_AMOUNT
+                    ? `Minimum Rs. ${MIN_ORDER_AMOUNT} Required`
+                    : isSubmitting
+                    ? "Processing..."
+                    : "Place Order"}
                 </button>
               </div>
             </form>
