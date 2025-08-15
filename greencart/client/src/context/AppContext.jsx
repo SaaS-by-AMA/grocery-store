@@ -8,6 +8,10 @@ axios.defaults.withCredentials = true;
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
 export const AppContext = createContext();
+export const TAX_RATE = 0; 
+export const DELIVERY_CHARGE = 50; 
+export const MIN_ORDER_AMOUNT = 700;  
+export const FREE_DELIVERY_THRESHOLD = 1500;
 
 export const AppContextProvider = ({ children }) => {
   const currency = import.meta.env.VITE_CURRENCY;

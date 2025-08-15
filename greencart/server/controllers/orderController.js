@@ -17,6 +17,11 @@ function formatPakistanTime(date) {
   }).format(date);
 }
 
+export const TAX_RATE = 0; 
+export const DELIVERY_CHARGE = 50; 
+export const MIN_ORDER_AMOUNT = 700;  
+export const FREE_DELIVERY_THRESHOLD = 1500;
+
 
 export const placeOrderCOD = async (req, res) => {
   try {
@@ -38,17 +43,7 @@ export const placeOrderCOD = async (req, res) => {
       return (await acc) + product.offerPrice * item.quantity;
     }, 0);
 
-    // Add Tax Charge (2%)
-    amount += Math.floor(amount * 0.02);
-
-    const newOrder = await Order.create({
-      items,
-      amount,
-      address,
-      paymentType: "COD",
-      isPaid: false,
-      status: "Order Placed",
-    });
+ 
 
     // Build detailed product list with price and quantity
     let subtotal = 0;
@@ -68,15 +63,37 @@ export const placeOrderCOD = async (req, res) => {
       })
     );
 
-    //  Now calculate tax and total amount
-    const tax = Math.round(subtotal * 0.02); // 2% tax
-    const totalAmount = subtotal + tax;
+    // Check minimum order amount
+    if (subtotal < MIN_ORDER_AMOUNT) {
+      return res.status(400).json({
+        success: false,
+        message: `Minimum order amount is Rs. ${MIN_ORDER_AMOUNT}`,
+      });
+    }
+
+    // Calculate tax
+    const tax = Math.round(subtotal * TAX_RATE);
+
+    // Apply delivery charge (free if above threshold)
+    const delivery_ch =
+      subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
+
+    const totalAmount = subtotal + delivery_ch + tax;
+
+       // Create order
+    const newOrder = await Order.create({
+      items,
+      amount: totalAmount,
+      address,
+      paymentType: "COD",
+      isPaid: false,
+      status: "Order Placed",
+    });
+
 
     // Format createdAt to Pakistan time
     const orderDate = formatPakistanTime(newOrder.createdAt);
 
-    console.log("Raw createdAt:", newOrder.createdAt);
-console.log("Formatted Pakistan time:", orderDate);
 
     await sendOrderEmail({
       to: process.env.EMAIL_USER,
@@ -126,7 +143,7 @@ console.log("Formatted Pakistan time:", orderDate);
       
       <div style="margin-top: 20px; padding-top: 10px; border-top: 2px solid #e2e8f0;">
         <p style="text-align: right;"><strong>Subtotal:</strong> Rs. ${subtotal}</p>
-        <p style="text-align: right;"><strong>Tax (2%):</strong> Rs. ${tax}</p>
+        <p style="text-align: right;"><strong>Delivery:</strong> Rs. ${delivery_ch}</p>
         <p style="text-align: right; font-size: 1.2em; font-weight: bold;">Total Amount: Rs. ${totalAmount}</p>
       </div>
 
