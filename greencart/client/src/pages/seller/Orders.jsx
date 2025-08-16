@@ -210,7 +210,7 @@ const Orders = () => {
                                         <div className="flex items-center gap-3 min-w-0">
                                             <h3 
                                                 className="font-medium text-gray-900 hover:text-primary cursor-pointer truncate"
-                                                onClick={() => handleOrderClick(order._id)}
+                                                
                                             >
                                                 Order #{order._id.substring(0, 8).toUpperCase()}
                                             </h3>
