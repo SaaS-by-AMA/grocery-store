@@ -3,7 +3,7 @@ import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 
 const ProductCard = ({ product }) => {
-  const { currency, addToCart, removeFromCart, cartItems, navigate } =
+  const { currency, addToCart, removeFromCart, cartItems,decreaseQty, navigate } =
     useAppContext();
 
   return (
@@ -90,7 +90,7 @@ const ProductCard = ({ product }) => {
               ) : (
                 <div className="flex items-center justify-between gap-3 w-28 h-10 bg-primary/10 rounded-full px-3 select-none">
                   <button
-                    onClick={() => removeFromCart(product._id)}
+                    onClick={() => decreaseQty(product._id)}
                     className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors text-primary font-bold text-lg"
                     aria-label={`Remove one ${product.name} from cart`}
                   >

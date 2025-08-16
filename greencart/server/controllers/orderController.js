@@ -20,7 +20,7 @@ function formatPakistanTime(date) {
 export const TAX_RATE = 0; 
 export const DELIVERY_CHARGE = 50; 
 export const MIN_ORDER_AMOUNT = 700;  
-export const FREE_DELIVERY_THRESHOLD = 1500;
+export const FREE_DELIVERY_THRESHOLD = 1000;
 
 
 export const placeOrderCOD = async (req, res) => {
