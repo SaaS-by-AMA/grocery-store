@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
 import { categories } from "../../assets/assets";
 
 const ProductList = () => {
-  const { products, currency, axios, fetchProducts, deleteProduct, updateProduct } = useAppContext();
+  const { products, currency, deleteProduct, updateProduct } = useAppContext();
 
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   const openEdit = (product) => {
     setEditing(product);
@@ -64,10 +66,75 @@ const ProductList = () => {
     }
   };
 
+  // Filter products based on search term and category
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [products, searchTerm, selectedCategory]);
+
   return (
     <div className="no-scrollbar flex-1 h-[95vh] overflow-y-scroll flex flex-col justify-between">
       <div className="w-full md:p-10 p-4">
         <h2 className="pb-4 text-lg font-medium">All Products</h2>
+        
+        {/* Search and Filter Controls */}
+        <div className="flex flex-col md:flex-row gap-4 mb-4">
+          <div className="flex-1">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search products by name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full border rounded-md px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <svg 
+                className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24" 
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+          </div>
+          
+          <div className="w-full md:w-48">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All Categories</option>
+              {categories.map((category, idx) => (
+                <option key={idx} value={category.path}>
+                  {category.path}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        
+        {/* Results Count */}
+        <div className="mb-4 text-sm text-gray-600">
+          Showing {filteredProducts.length} of {products.length} products
+          {(searchTerm || selectedCategory !== "all") && (
+            <button 
+              onClick={() => {
+                setSearchTerm("");
+                setSelectedCategory("all");
+              }}
+              className="ml-2 text-blue-600 hover:underline"
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+
         <div className="flex flex-col items-center w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
           {/* Responsive table container */}
           <div className="w-full overflow-x-auto">
@@ -82,44 +149,52 @@ const ProductList = () => {
                 </tr>
               </thead>
               <tbody className="text-sm text-gray-500">
-                {products.map((product) => (
-                  <tr key={product._id} className="border-t border-gray-500/20">
-                    <td className="px-2 md:px-4 py-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex-shrink-0 border border-gray-300 rounded p-1">
-                          <img 
-                            src={product.image?.[0] || "/placeholder.png"} 
-                            alt="Product" 
-                            className="w-12 h-12 md:w-16 md:h-16 object-cover" 
-                          />
+                {filteredProducts.length > 0 ? (
+                  filteredProducts.map((product) => (
+                    <tr key={product._id} className="border-t border-gray-500/20">
+                      <td className="px-2 md:px-4 py-3">
+                        <div className="flex items-center space-x-3">
+                          <div className="flex-shrink-0 border border-gray-300 rounded p-1">
+                            <img 
+                              src={product.image?.[0] || "/placeholder.png"} 
+                              alt="Product" 
+                              className="w-12 h-12 md:w-16 md:h-16 object-cover" 
+                            />
+                          </div>
+                          <span className="truncate max-w-[120px] md:max-w-[180px]">{product.name}</span>
                         </div>
-                        <span className="truncate max-w-[120px] md:max-w-[180px]">{product.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-2 md:px-4 py-3 truncate max-w-[120px]">{product.category}</td>
-                    <td className="px-2 md:px-4 py-3 hidden sm:table-cell">{currency}.{product.offerPrice}</td>
-                    <td className="px-2 md:px-4 py-3">
-                      <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">
-                        <input
-                          onChange={async ()=> {
-                            await updateProduct(product._id, { inStock: !product.inStock });
-                          }}
-                          checked={product.inStock}
-                          type="checkbox"
-                          className="sr-only peer"
-                        />
-                        <div className="w-12 h-7 bg-slate-300 rounded-full peer-checked:bg-blue-600 transition-colors duration-200"></div>
-                        <span className="dot absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-5"></span>
-                      </label>
-                    </td>
-                    <td className="px-2 md:px-4 py-3">
-                      <div className="flex flex-wrap gap-1 md:gap-2">
-                        <button onClick={() => openEdit(product)} className="px-2 py-1 border rounded text-xs md:text-sm">Edit</button>
-                        <button onClick={() => confirmDelete(product._id)} className="px-2 py-1 border rounded text-xs md:text-sm text-red-600">Delete</button>
-                      </div>
+                      </td>
+                      <td className="px-2 md:px-4 py-3 truncate max-w-[120px]">{product.category}</td>
+                      <td className="px-2 md:px-4 py-3 hidden sm:table-cell">{currency}.{product.offerPrice}</td>
+                      <td className="px-2 md:px-4 py-3">
+                        <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">
+                          <input
+                            onChange={async ()=> {
+                              await updateProduct(product._id, { inStock: !product.inStock });
+                            }}
+                            checked={product.inStock}
+                            type="checkbox"
+                            className="sr-only peer"
+                          />
+                          <div className="w-12 h-7 bg-slate-300 rounded-full peer-checked:bg-blue-600 transition-colors duration-200"></div>
+                          <span className="dot absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-5"></span>
+                        </label>
+                      </td>
+                      <td className="px-2 md:px-4 py-3">
+                        <div className="flex flex-wrap gap-1 md:gap-2">
+                          <button onClick={() => openEdit(product)} className="px-2 py-1 border rounded text-xs md:text-sm">Edit</button>
+                          <button onClick={() => confirmDelete(product._id)} className="px-2 py-1 border rounded text-xs md:text-sm text-red-600">Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="px-4 py-6 text-center">
+                      No products found. Try adjusting your search or filters.
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
