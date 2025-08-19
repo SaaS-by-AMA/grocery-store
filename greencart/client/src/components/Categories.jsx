@@ -5,6 +5,16 @@ import { useAppContext } from '../context/AppContext'
 const Categories = () => {
     const { navigate } = useAppContext()
 
+    const handleCategoryClick = (categoryPath) => {
+        // Navigate first, then scroll to top after navigation completes
+        navigate(`/products/${categoryPath.toLowerCase()}`)
+        
+        // Use setTimeout to ensure scroll happens after navigation
+        setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+        }, 100)
+    }
+
     return (
         <div className='mt-16'>
             <p className='text-2xl md:text-3xl font-medium'>Categories</p>
@@ -14,10 +24,7 @@ const Categories = () => {
                         key={index} 
                         className='relative cursor-pointer py-5 px-3 gap-2 rounded-lg flex flex-col justify-center items-center transition-all duration-300 hover:shadow-lg hover:scale-[1.03]'
                         style={{ backgroundColor: category.bgColor }}
-                        onClick={() => {
-                            navigate(`/products/${category.path.toLowerCase()}`)
-                            window.scrollTo(0, 0)
-                        }}
+                        onClick={() => handleCategoryClick(category.path)}
                     >
                         <div className='flex flex-col items-center justify-center'>
                             <img 
