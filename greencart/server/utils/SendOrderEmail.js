@@ -14,7 +14,7 @@ export async function sendOrderEmail(order) {
 
 
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: `"Alghani Mart" <${process.env.EMAIL_USER}>`,
     to: process.env.EMAIL_USER,
     subject: order.subject || "New Order Received",
     html: order.html || `A new order has been placed:\n\n\nAddress: ${order.address}\nTotal: ₹${order.amount}`,
