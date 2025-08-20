@@ -6,7 +6,7 @@ import ProductCard from "../components/ProductCard";
 
 const ProductDetails = () => {
 
-    const {products, navigate, currency, addToCart} = useAppContext()
+    const {products, navigate, currency, addToCart , setSearchQuery} = useAppContext()
     const {id} = useParams()
     const [relatedProducts, setRelatedProducts] = useState([]);
     const [thumbnail, setThumbnail] = useState(null);
@@ -24,6 +24,13 @@ const ProductDetails = () => {
     useEffect(()=>{
         setThumbnail(product?.image[0] ? product.image[0] : null)
     },[product])
+
+        // Create a dedicated function for the Buy Now action
+    const handleBuyNow = () => {
+        addToCart(product._id);
+        setSearchQuery(""); // Clear the search query before navigation
+        navigate("/cart");
+    }
 
 
     return product && (
@@ -62,8 +69,8 @@ const ProductDetails = () => {
                     </div>
 
                     <div className="mt-6">
-                        <p className="text-gray-500/70 line-through">MRP: {currency}{product.price}</p>
-                        <p className="text-2xl font-medium">MRP: {currency}{product.offerPrice}</p>
+                        <p className="text-gray-500/70 line-through">MRP: {currency}.{product.price}</p>
+                        <p className="text-2xl font-medium">MRP: {currency}.{product.offerPrice}</p>
                         <span className="text-gray-500/70">(inclusive of all taxes)</span>
                     </div>
 
@@ -78,7 +85,7 @@ const ProductDetails = () => {
                         <button onClick={()=> addToCart(product._id)} className="w-full py-3.5 cursor-pointer font-medium bg-gray-100 text-gray-800/80 hover:bg-gray-200 transition" >
                             Add to Cart
                         </button>
-                        <button onClick={()=> {addToCart(product._id); navigate("/cart")}} className="w-full py-3.5 cursor-pointer font-medium bg-primary text-white hover:bg-primary-dull transition" >
+                        <button onClick={handleBuyNow} className="w-full py-3.5 cursor-pointer font-medium bg-primary text-white hover:bg-primary-dull transition" >
                             Buy now
                         </button>
                     </div>
