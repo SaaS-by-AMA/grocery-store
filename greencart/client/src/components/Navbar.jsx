@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { assets } from "../assets/assets";
@@ -16,14 +15,13 @@ const Navbar = () => {
   const { navigate, setSearchQuery, searchQuery, getCartCount } = useAppContext();
 
   useEffect(() => {
-    // Redirect to /products when searchQuery appears and we are not already there
-    if (searchQuery.length > 0 &&
-        !location.pathname.startsWith("/products") &&
-        !location.pathname.startsWith("/product/")) {
+    if (
+      searchQuery.length > 0 &&
+      !location.pathname.startsWith("/products") &&
+      !location.pathname.startsWith("/product/")
+    ) {
       navigate("/products");
     }
-
-    // Optional: Clear search when leaving /products (kept from your version)
     if (!location.pathname.startsWith("/products") && searchQuery.length > 0) {
       setSearchQuery("");
     }
@@ -53,44 +51,79 @@ const Navbar = () => {
   const menuItemVariants = { hidden: { opacity: 0, x: -20, transition: { duration: 0.2 }},
                              visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 20, duration: 0.2 }}};
 
+
+  const activeClass =
+    "relative font-medium text-primary after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-full after:h-[2px] after:bg-primary";
+
+  const defaultClass =
+    "relative font-medium text-gray-600 hover:text-primary transition-colors duration-200";
+
   return (
     <>
-      <nav className="flex shadow-md items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-300 bg-white relative transition-all z-50">
-        <NavLink to="/" onClick={() => setOpen(false)}>
+      <nav className="flex shadow-sm items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-200 bg-white relative transition-all z-50">
+        {/* Logo */}
+        <NavLink to="/" onClick={() => setOpen(false)} className="flex items-center gap-2">
           <img className="h-11" src={assets.logo} alt="logo" />
         </NavLink>
 
-        {/* Desktop */}
-        <div className="hidden sm:flex items-center gap-8">
-          <NavLink to="/">Home</NavLink>
-          <NavLink to="/products">All Products</NavLink>
-          <NavLink to="/contact-us">Contact Us</NavLink>
+        {/* Desktop Menu */}
+        <div className="hidden sm:flex items-center gap-10">
+          <NavLink to="/" className={({ isActive }) => (isActive ? activeClass : defaultClass)}>
+            Home
+          </NavLink>
+          <NavLink
+            to="/products"
+            className={({ isActive }) => (isActive ? activeClass : defaultClass)}
+          >
+            All Products
+          </NavLink>
+          <NavLink
+            to="/contact-us"
+            className={({ isActive }) => (isActive ? activeClass : defaultClass)}
+          >
+            Contact Us
+          </NavLink>
 
-          {/* REPLACED input with SearchBar */}
+          {/* Search */}
           <div className="hidden lg:block min-w-[320px]">
             <SearchBar compact />
           </div>
 
-          <div onClick={() => navigate("/cart")} className="relative cursor-pointer">
-            <img src={assets.nav_cart_icon} alt="cart" className="w-6 opacity-80" />
-            <button className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full">
+          {/* Cart */}
+          <div onClick={() => navigate("/cart")} className="relative cursor-pointer group">
+            <img
+              src={assets.nav_cart_icon}
+              alt="cart"
+              className="w-6 opacity-80 group-hover:opacity-100 transition"
+            />
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full flex items-center justify-center"
+            >
               {getCartCount()}
-            </button>
+            </motion.button>
           </div>
         </div>
 
         {/* Mobile header controls */}
         <div className="flex items-center gap-6 sm:hidden">
           <button
-            onClick={() => { setMobileSearch((prev) => !prev); setOpen(false); }}
+            onClick={() => {
+              setMobileSearch((prev) => !prev);
+              setOpen(false);
+            }}
             aria-label="Search"
             className="focus:outline-none"
           >
             <img src={assets.search_icon} alt="search" className="w-6 h-6" />
           </button>
 
-          <div onClick={() => navigate("/cart")} className="relative cursor-pointer">
-            <img src={assets.nav_cart_icon} alt="cart" className="w-6 opacity-80" />
+          <div onClick={() => navigate("/cart")} className="relative cursor-pointer group">
+            <img
+              src={assets.nav_cart_icon}
+              alt="cart"
+              className="w-6 opacity-80 group-hover:opacity-100 transition"
+            />
             <button className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full">
               {getCartCount()}
             </button>
@@ -109,7 +142,7 @@ const Navbar = () => {
           </motion.button>
         </div>
 
-        {/* Mobile Search Overlay (reuses SearchBar for same behavior) */}
+        {/* Mobile Search Overlay */}
         {mobileSearch && (
           <div className="absolute left-0 top-0 w-full bg-white z-40 sm:hidden shadow-md rounded-b-2xl">
             <div className="flex items-center gap-2 px-4 py-3">
@@ -135,7 +168,7 @@ const Navbar = () => {
           </div>
         )}
 
-        {/* Animated Mobile Menu (unchanged) */}
+        {/* Animated Mobile Menu */}
         <AnimatePresence>
           {open && (
             <motion.div
@@ -147,13 +180,37 @@ const Navbar = () => {
               variants={menuContainerVariants}
             >
               <motion.div variants={menuItemVariants}>
-                <NavLink to="/" onClick={() => setOpen(false)} className="block w-full p-2 rounded-md hover:bg-gray-50">Home</NavLink>
+                <NavLink
+                  to="/"
+                  onClick={() => setOpen(false)}
+                  className={({ isActive }) =>
+                    isActive ? `${activeClass} block w-full p-2` : "block w-full p-2 " + defaultClass
+                  }
+                >
+                  Home
+                </NavLink>
               </motion.div>
               <motion.div variants={menuItemVariants}>
-                <NavLink to="/products" onClick={() => setOpen(false)} className="block w-full p-2 rounded-md hover:bg-gray-50">All Products</NavLink>
+                <NavLink
+                  to="/products"
+                  onClick={() => setOpen(false)}
+                  className={({ isActive }) =>
+                    isActive ? `${activeClass} block w-full p-2` : "block w-full p-2 " + defaultClass
+                  }
+                >
+                  All Products
+                </NavLink>
               </motion.div>
               <motion.div variants={menuItemVariants}>
-                <NavLink to="/contact-us" onClick={() => setOpen(false)} className="block w-full p-2 rounded-md hover:bg-gray-50">Contact Us</NavLink>
+                <NavLink
+                  to="/contact-us"
+                  onClick={() => setOpen(false)}
+                  className={({ isActive }) =>
+                    isActive ? `${activeClass} block w-full p-2` : "block w-full p-2 " + defaultClass
+                  }
+                >
+                  Contact Us
+                </NavLink>
               </motion.div>
             </motion.div>
           )}
