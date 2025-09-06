@@ -83,7 +83,7 @@ const Footer = () => {
             <div className="h-8 w-px bg-gray-300 hidden md:block"></div>
             
             <a 
-              href="https://wa.me/923444257032" 
+              href="https://wa.me/923014595772" 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-2 bg-green-100 hover:bg-green-200 rounded-full transition"
