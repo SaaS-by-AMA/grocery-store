@@ -31,6 +31,11 @@ app.use(cors({
 // Basic routes
 app.get('/', (req, res) => res.send("API is Working"));
 
+// Health check route for uptime monitoring
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok', uptime: process.uptime() });
+});
+
 // API endpoints
 app.use('/api/product', productRouter);
 app.use('/api/order', orderRouter);
