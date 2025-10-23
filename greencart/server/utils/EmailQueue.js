@@ -1,4 +1,8 @@
 import { Resend } from 'resend';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -28,7 +32,7 @@ class EmailQueue {
 
     try {
       await this.sendEmail(emailData);
-      console.log('✅ Email sent successfully for order:', emailData.orderId);
+      console.log(`✅ Email sent successfully for order:${emailData.orderId} from ${emailData.address.firstName}` );
       this.queue.shift(); // Remove from queue on success
     } catch (error) {
       console.error(`❌ Email failed for order ${emailData.orderId}:`, error.message);
@@ -51,7 +55,7 @@ class EmailQueue {
 
   async sendEmail(emailData) {
     const { data, error } = await resend.emails.send({
-      from: 'Alghani Mart <orders@alghani.store>',
+      from: 'Alghani Mart <onboarding@resend.dev>',
       to: [process.env.SELLER_EMAIL_R],
       subject: `New Order #${emailData.orderId} - Alghani Mart`,
       html: this.generateEmailTemplate(emailData),
