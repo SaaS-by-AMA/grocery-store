@@ -1,9 +1,3 @@
-node_modules
-
-# Environment variables
-client/.env
-server/.env
-
 # Logs
 logs
 *.log
@@ -143,4 +137,3 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-
